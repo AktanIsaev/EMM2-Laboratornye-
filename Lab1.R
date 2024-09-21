@@ -1,3 +1,5 @@
+options(encoding = "UTF-8")
+
 #Задание 1
 # Функция для генерации AR(1) процесса
 ar <- function(n, theta) {
@@ -65,3 +67,4 @@ for (theta in theta_values) {
     cat("Оцененное значение ?? для начального ?? =", theta, ":", estimated_theta, "\n")
   }
 }
+
