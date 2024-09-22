@@ -13,10 +13,10 @@ ar <- function(n, theta) {
   
   # Генерация AR(1) процесса
   for (k in 2:n) {
-    x[k] <- theta * x[k - 1] + epsilon[k]
+    x[k] <- theta * x[k - 1] + epsilon[k]  # Формула AR(1)
   }
   
-  return(x)
+  return(x)  # Возвращаем сгенерированный процесс
 }
 
 # Параметры
@@ -26,24 +26,24 @@ n <- 1000  # Объем выборки для задания
 theta_values <- c(0.5, 1, 1.5)  # |theta| < 1, |theta| = 1, |theta| > 1
 
 # Построение графиков
-par(mfrow=c(3, 1))  # Разделение окна на 3 строки и 1 столбец
+par(mfrow=c(3, 1))  # Разделение окна на 3 строки и 1 столбец для графиков
 
 for (theta in theta_values) {
-  x <- ar(n, theta)
+  x <- ar(n, theta)  # Генерация AR(1) процесса для текущего θ
   
   plot(x, type='l', main=paste("AR(1) процесс при θ =", theta), 
-       ylab="Значения", xlab="Наблюдения", col="blue")
+       ylab="Значения", xlab="Наблюдения", col="blue")  # Построение графика
 }
 
 # Задание 2: Оценка параметра θ методом наименьших квадратов с ограничением
 
 # Функция для оценки параметра θ методом наименьших квадратов с ограничением
 estimate_theta_mnk <- function(x) {
-  n <- length(x)
+  n <- length(x)  # Длина вектора данных
   
   # Числитель и знаменатель для оценки θ
-  numerator <- sum(x[2:n] * x[1:(n-1)])
-  denominator <- sum(x[1:(n-1)]^2)
+  numerator <- sum(x[2:n] * x[1:(n-1)])   # Сумма произведений текущего и предыдущего значений
+  denominator <- sum(x[1:(n-1)]^2)         # Сумма квадратов предыдущих значений
   
   # Оценка θ
   estimated_theta <- numerator / denominator
@@ -51,13 +51,13 @@ estimate_theta_mnk <- function(x) {
   # Применяем ограничение |θ| ≤ 1
   estimated_theta <- ifelse(abs(estimated_theta) > 1, sign(estimated_theta), estimated_theta)
   
-  return(estimated_theta)
+  return(estimated_theta)  # Возвращаем оцененное значение θ
 }
 
 # Оценка параметра θ для каждого процесса и вывод результата
 cat("\nОценка параметра θ:\n")
 for (theta in theta_values) {
-  x <- ar(n, theta)
+  x <- ar(n, theta)  # Генерация AR(1) процесса для текущего θ
   
   # Оценка параметра θ методом МНК
   estimated_theta_mnk <- estimate_theta_mnk(x)
@@ -72,23 +72,23 @@ for (theta in theta_values) {
 
 # Функция для оценки параметра θ методом максимального правдоподобия с учетом гауссовского шума
 estimate_theta_mle <- function(x) {
-  n <- length(x)
+  n <- length(x)  # Длина вектора данных
   
   # Оптимизация функции правдоподобия
   sum_squares <- function(theta) {
-    sum((x[2:n] - theta * x[1:(n-1)])^2)
+    sum((x[2:n] - theta * x[1:(n-1)])^2)   # Сумма квадратов ошибок
   }
   
   # Находим значение θ, минимизирующее сумму квадратов ошибок (эквивалентно максимизации функции правдоподобия)
-  result <- optimize(sum_squares, interval = c(-1, 1))
+  result <- optimize(sum_squares, interval = c(-1, 1))  
   
-  return(result$minimum)
+  return(result$minimum)   # Возвращаем оцененное значение θ методом МП
 }
 
 # Оценка параметра θ методом максимального правдоподобия
 cat("\nОценка параметра θ методом максимального правдоподобия:\n")
-true_theta <- c(0.5) # Установите значение true_theta для генерации данных
-x_final <- ar(n, true_theta) # Используем одно значение true_theta для генерации данных
+true_theta <- c(0.5)   # Установка значения true_theta для генерации данных
+x_final <- ar(n, true_theta)   # Используем одно значение true_theta для генерации данных
 estimated_theta_mle <- estimate_theta_mle(x_final)
 
 cat("Оцененное значение θ методом максимального правдоподобия:", estimated_theta_mle, "\n")
@@ -106,28 +106,76 @@ if (abs(estimated_theta_mnk_final - estimated_theta_mle) < .Machine$double.eps) 
 
 # Задание 4: Рассчитать МНК-оценки для объема выборки k = 10, ..., n и построить график
 
-# (a) Замоделировать процесс AR(1) объема выборки n = 1000.
+# Генерируем процесс AR(1)
 x_large <- ar(n, true_theta)
 
 # Вектор для хранения оценок МНК
 mnk_estimates <- numeric(n - 9)
 
-# (b) Расчет МНК-оценок от k = 10 до n.
+# Расчет МНК-оценок от k = 10 до n.
 for (k in 10:n) {
   mnk_estimates[k - 9] <- estimate_theta_mnk(x_large[1:k])
 }
 
-# (c) Расчет МНК-оценок по всем k от k = 10 до k = n.
+# Расчет МНК-оценок по всем k от k = 10 до k = n.
 cat("\nРасчет МНК-оценок по всем k от k = 10 до k = n:\n")
 for (k in seq(10, n)) {
   cat("k =", k, "-> МНК-оценка:", mnk_estimates[k - 9], "\n")
 }
 
-# (d) Построение графика динамики оценок МНК в зависимости от объема выборки.
+# Построение графика динамики оценок МНК в зависимости от объема выборки.
 plot(10:n, mnk_estimates, type='l', col='blue', 
      main='Динамика МНК-оценок в зависимости от объема выборки',
      xlab='Объем выборки k', ylab='Оценка θ')
 abline(h=true_theta, col='red', lty=2) # Линия истинного значения θ для сравнения
 
 cat("\nМНК-оценки рассчитаны и график построен.\n")
+
+# Задание 5: Построить график устойчивого процесса AR(2)
+
+# Параметры для AR(2)
+theta_1 <- 0.5   # Параметр θ1
+theta_2 <- -0.3   # Параметр θ2
+
+# Функция для генерации AR(2) процесса
+ar2 <- function(n, theta_1, theta_2) {
+  x <- numeric(n)
+  
+  # Генерация случайной ошибки (шум)
+  epsilon <- rnorm(n, mean = 0, sd = 1)
+  
+  # Начальные значения (случайные или фиксированные)
+  x[1] <- rnorm(1)
+  x[2] <- rnorm(1)
+  
+  # Генерация AR(2) процесса
+  for (k in 3:n) {
+    x[k] <- theta_1 * x[k - 1] + theta_2 * x[k - 2] + epsilon[k]
+  }
+  
+  return(x)
+}
+
+# Генерация AR(2) процесса с n наблюдениями
+ar2_process <- ar2(n, theta_1, theta_2)
+
+# Построение графика AR(2)
+plot(ar2_process, type='l', main="AR(2) процесс", 
+     ylab="Значения", xlab="Наблюдения", col="blue")
+
+cat("\nГрафик устойчивого процесса AR(2) построен.\n")
+
+# Задание 6: Вычислить значение параметра AR(2), используя функцию arima пакета stats.
+
+# Убедимся, что пакет stats загружен
+library(stats)
+
+# Применение функции arima для оценки параметров AR(2)
+arima_model <- arima(ar2_process, order=c(2,0,0), include.mean=FALSE)
+
+# Вывод результатов оценки модели AR(2)
+cat("\nРезультаты оценки модели AR(2):\n")
+print(arima_model)
+
+
 
