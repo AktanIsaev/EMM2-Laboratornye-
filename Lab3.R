@@ -116,3 +116,25 @@ lines(lower_bound, col = "red", lty = 2)
 legend("topleft", legend = c("Реальные значения", "Прогнозы", "Границы волатильности"),
        col = c("turquoise", "black", "red"), lty = c(1, NA, 2), pch = c(NA, 1, NA))
 
+# Задания 5-7 ----
+
+# Взял котировку акции Apple с 01.01.2000 по 15.10.2024
+# В связи с проблемами преобразования формата даты из файла с расширением txt, 
+# нашел другой способ через расширение csv и метода read.csv2 
+
+# Загрузка данных из файла CSV
+data <- read.csv2("C:\\Users\\Aktan\\Desktop\\AAPL_200101_241015.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# Проверка структуры данных
+str(data)
+
+# Преобразование формата даты 
+data$X.DATE. <- as.Date(paste0(substr(data$X.DATE., 1, 4), "-", substr(data$X.DATE., 5, 6), "-01"), format = "%Y-%m-%d")
+
+# Проверка на наличие NA в данных
+sum_na_high <- sum(is.na(data$X.HIGH.))
+cat("Количество NA в наивысших ценах (HIGH):", sum_na_high, "\n")
+
+# Построение графика для динамики актива
+plot(data$X.HIGH., type="l", col="blue", main = "Динамика актива",
+     xlab = "День", ylab = "Цена")
