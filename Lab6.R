@@ -33,3 +33,25 @@ plot(seq(0, k_max * delta, by = delta), S, type = "l",
      col = "blue", xlab = "Время (t)", ylab = "S(t)", 
      main = "Моделирование геометрического броуновского движения", lwd = 1)
 grid()
+
+# Задание 2 ----
+
+X_k <- numeric(length(S) - 1)  # Создаем вектор для хранения приращений
+
+for (k in 2:length(S)) {
+  X_k[k - 1] <- log(S[k] / S[k - 1])  # Вычисляем разность логарифмов соседних значений
+}
+
+# Оценка параметра mu (среднего значения приращений)
+mu_hat <- sum(X_k) / length(X_k)
+
+# Оценка дисперсии sigma^2
+sigma_sq_hat <- sum((X_k - mu_hat) ^ 2) / length(X_k)  
+
+# Преобразование оценок для получения a и sigma^2
+sigma_hat_sq <- sigma_sq_hat / delta  # Оценка sigma^2 с учетом дискретизации
+a_hat <- mu_hat / delta + sigma_hat_sq / 2  # Оценка a
+
+# Вывод результатов
+cat("Оценка параметра a (сноса):", a_hat, "\n")
+cat("Оценка параметра sigma^2 (волатильности):", sigma_hat_sq, "\n")
